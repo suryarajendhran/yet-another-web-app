@@ -1,14 +1,17 @@
 import logo from "./logo.svg";
 import "./App.css";
 import data from "./data.json";
+import React, { useState } from "react";
 
 function App() {
-  console.log(data);
+  const [galleryItems, updateGalleryItems] = useState(
+    data.sort((item1, item2) => item1.position - item2.position)
+  );
   return (
     <div className="App">
       <header className="App-header">
         <div className="gallery">
-          {data.map(({ title, position, type }) => {
+          {galleryItems.map(({ title, position, type }, index) => {
             return (
               <div
                 key={title}
@@ -17,7 +20,7 @@ function App() {
                 onDragStart={(event) => {
                   event.target.style.opacity = 0.4;
 
-                  event.dataTransfer.effectAllowed = 'move';
+                  event.dataTransfer.effectAllowed = "move";
                   event.dataTransfer.setData("text/plain", title);
                 }}
                 onDragEnd={(event) => {
@@ -40,10 +43,14 @@ function App() {
                 onDrop={(event) => {
                   event.stopPropagation();
 
-                  const droppedItemTitle = event.dataTransfer.getData("text/plain");
+                  const droppedItemTitle =
+                    event.dataTransfer.getData("text/plain");
+                  const droppedItem = galleryItems.find(
+                    (galleryItem) => galleryItem.title === droppedItemTitle
+                  );
+                  
 
                   console.log(`${droppedItemTitle} dropped on ${title}`);
-
                 }}
               >
                 {title}
