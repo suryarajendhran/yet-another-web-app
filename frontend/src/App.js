@@ -38,17 +38,26 @@ function App() {
                 onDrop={(event) => {
                   event.stopPropagation();
 
-                  const drop =
-                    JSON.parse(event.dataTransfer.getData("text/plain"));
+                  const drop = JSON.parse(
+                    event.dataTransfer.getData("text/plain")
+                  );
                   const gallery = Array.from(galleryItems);
-                  gallery[index] = {...drop, position: position};
-                  gallery[drop.index] =  {title, type, position: drop.position};
+                  gallery[index] = { ...drop, position: position };
+                  gallery[drop.index] = {
+                    title,
+                    type,
+                    position: drop.position,
+                  };
 
                   updateGalleryItems(gallery);
                   console.log(`${drop.title} dropped on ${title}`);
                 }}
               >
-                {title}
+                <span>{title}</span>
+                <img
+                  src={`https://fakeimg.pl/250x250/ff0000,128/333333,255/?text=${title}&font=lobster`}
+                  alt={title}
+                />
               </div>
             );
           })}
