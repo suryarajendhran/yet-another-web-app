@@ -8,9 +8,11 @@ function App() {
   const [galleryItems, updateGalleryItems] = useState(
     data.sort((item1, item2) => item1.position - item2.position)
   );
+  const getImgUrl = (title) =>
+    `https://fakeimg.pl/250x250/ff0000,128/333333,255/?text=${title}&font=lobster`;
   const openImage = (title, type) => {
     updateActiveImg(
-      `https://fakeimg.pl/250x250/ff0000,128/333333,255/?text=${title}&font=lobster`
+      getImgUrl(title)
     );
   };
   const handleClose = () => {
@@ -68,14 +70,14 @@ function App() {
               >
                 <span>{title}</span>
                 <ImageWithSpinner
-                  imgUrl={`https://fakeimg.pl/250x250/ff0000,128/333333,255/?text=${title}&font=lobster`}
+                  imgUrl={getImgUrl(title)}
                 />
               </div>
             );
           })}
         </div>
       </header>
-      <ImageViewer activeImg={activeImg} handleEsc={handleClose}/>
+      <ImageViewer activeImg={activeImg} handleEsc={handleClose} />
     </div>
   );
 }
