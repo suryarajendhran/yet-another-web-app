@@ -21,18 +21,13 @@ function App() {
                   event.target.style.opacity = 0.4;
 
                   event.dataTransfer.effectAllowed = "move";
-                  event.dataTransfer.setData("text/plain", title);
+                  event.dataTransfer.setData(
+                    "text/plain",
+                    JSON.stringify({ title, type, position, index })
+                  );
                 }}
                 onDragEnd={(event) => {
                   event.target.style.opacity = 1;
-
-                  //TODO: Remove .over from all items
-                }}
-                onDragEnter={(event) => {
-                  event.target.classList.add("over");
-                }}
-                onDragLeave={(event) => {
-                  event.target.classList.remove("over");
                 }}
                 onDragOver={(event) => {
                   if (event.preventDefault) {
@@ -43,14 +38,14 @@ function App() {
                 onDrop={(event) => {
                   event.stopPropagation();
 
-                  const droppedItemTitle =
-                    event.dataTransfer.getData("text/plain");
-                  const droppedItem = galleryItems.find(
-                    (galleryItem) => galleryItem.title === droppedItemTitle
-                  );
-                  
+                  const drop =
+                    JSON.parse(event.dataTransfer.getData("text/plain"));
+                  const gallery = Array.from(galleryItems);
+                  gallery[index] = {...drop, position: position};
+                  gallery[drop.index] =  {title, type, position: drop.position};
 
-                  console.log(`${droppedItemTitle} dropped on ${title}`);
+                  updateGalleryItems(gallery);
+                  console.log(`${drop.title} dropped on ${title}`);
                 }}
               >
                 {title}
