@@ -2,16 +2,22 @@ import logo from "./logo.svg";
 import "./App.css";
 import data from "./data.json";
 import React, { useState } from "react";
+import ImageWithSpinner from "./ImageWithSpinner";
 
 function App() {
   const [galleryItems, updateGalleryItems] = useState(
-    data.sort((item1, item2) => item1.position - item2.position)
+    data
+      .sort((item1, item2) => item1.position - item2.position)
+      .map((item) => {
+        item.loading = true;
+        return item;
+      })
   );
   return (
     <div className="App">
       <header className="App-header">
         <div className="gallery">
-          {galleryItems.map(({ title, position, type }, index) => {
+          {galleryItems.map(({ title, position, type, loading }, index) => {
             return (
               <div
                 key={title}
@@ -54,10 +60,10 @@ function App() {
                 }}
               >
                 <span>{title}</span>
-                <img
-                  src={`https://fakeimg.pl/250x250/ff0000,128/333333,255/?text=${title}&font=lobster`}
-                  alt={title}
+                <ImageWithSpinner
+                  imgUrl={`https://fakeimg.pl/250x250/ff0000,128/333333,255/?text=${title}&font=lobster`}
                 />
+                
               </div>
             );
           })}
