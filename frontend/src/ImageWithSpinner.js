@@ -1,9 +1,10 @@
 import { useState } from "react";
+import("./ImageWithSpinner.css");
 
 function ImageWithSpinner({ imgUrl }) {
   const [loading, updateLoading] = useState(true);
   return (
-    <div>
+    <div className="image-container">
       <img
         style={{ display: loading ? "none" : "block" }}
         alt={imgUrl}
