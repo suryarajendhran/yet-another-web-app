@@ -68,6 +68,7 @@ function App() {
                   console.log(`${drop.title} dropped on ${title}`);
                 }}
               >
+                <div className="card-overlay"></div>
                 <span>{title}</span>
                 <ImageWithSpinner
                   imgUrl={getImgUrl(title)}
