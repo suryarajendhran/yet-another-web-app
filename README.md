@@ -35,8 +35,61 @@ The modal for the image viewer was the final part and nothing remarkable to say 
 
 All in all was quite fun to do the frontend. Really had to force myself not to fiddle with UI too much and not build excess features.
 
-### Here's how you can view it
+### Here's how you can view this version
 
 1. Checkout the branch [part1-frontend-freeze](https://github.com/suryarajendhran/yet-another-web-app/tree/part1-frontend-freeze)
-2. Switch to the frontend folder: ```cd frontend``` 
-3. Serve the app locally using the development build: ```npm start```
+
+   ```git checkout part1-frontend-freeze```
+2. Switch to the frontend folder
+
+   ```cd frontend```
+3. Install dependencies
+
+   ```npm install```
+4. Serve the app locally using the development build:
+
+   ```npm start```
+
+## Part 2
+
+### API Design
+
+Part 2 was a lot of familiar than it's predecessor. The simplest API that can get the job done would need to do only two things:
+
+1. Retrieve the items from a table
+2. Update the positions of the items in the table
+
+The data model and operations were simple enough to not necessitate the use of an ORM so I just needed a tool that was high level enough to manage the connections and can let me swap between different database engines (SQLite and PostgreSQL for example).
+
+The starlette recommended databases package was just the right answer. Plus it worked with SQLAlchemy & Alembic in case I needed to do more.
+
+Then I made the migrations & seeding part of the on_startup hook of starlette so that was out of the way. Then I simply tested the API for read and update.
+
+### Getting docker setup
+
+The documentation for the recommended starlette docker image was quite simple and I got it up and running in a few minutes. But I did run into a small issues with using pipenv to install a packages. After a few minutes trying to fix it I just assumed that the docker image was using a different way running the uvicorn server so changed the Dockerfile to generate a requirement.txt on the fly and use that to ```pip install```
+
+Then there was the matter of connecting my trusty old PostgreSQL container to the API container. While I could've skipped this step during this stage I know I probably needed this for the deployment stage so I just got it out of the way. Looking back at it, I could've definitely skipped the docker part and completed all of this in 30 minutes tops. But hindsight is 20/20.
+
+### Here's how you can view this version
+
+1. Checkout the branch [part2-making-the-call-freeze](https://github.com/suryarajendhran/yet-another-web-app/tree/part2-making-the-call-freeze)
+
+   ```git checkout part2-making-the-call-freeze```
+2. Switch to the frontend folder
+
+   ```cd backend```
+3. Install dependencies
+
+   ```pipenv install```
+4. You can connect the app to a database by editing one of the .env templates (postgres, sqlite) and then renaming the file to .env. If you're lazy then sqlite is the way to go. If you skip this step, the app will complain about it.
+5. Serve the app locally
+
+   ```pipenv run uvicorn main:app```
+
+### API Endpoints
+
+| Route      | Method | Accepts body | Returns |
+| ----------- | ----------- | --------- | ------ |
+| / | GET | None | Array of all items |
+| / | POST | Array of items to be updated in the format {id: , position:} | Status code 200 if accepted, error if not |
