@@ -1,5 +1,5 @@
 const superagent = require("superagent");
-let apiURL = "http://localhost:8000";
+let apiURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
 export const fetchItems = async () => {
   try {

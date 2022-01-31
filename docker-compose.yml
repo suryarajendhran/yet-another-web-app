@@ -1,0 +1,49 @@
+version: '3.9'
+services:
+  pg:
+    image: postgres:14.1
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    ports:
+      - $POSTGRES_LOCAL_PORT:$POSTGRES_DOCKER_PORT
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - backend
+  
+  yawa-backend:
+    depends_on:
+      - pg
+    build: ./backend
+    # restart: unless-stopped
+    env_file: .env
+    ports:
+      - $STARLETTE_LOCAL_PORT:$STARLETTE_DOCKER_PORT
+    environment:
+      - POSTGRES_HOST=pg
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_PORT=$POSTGRES_DOCKER_PORT
+    networks:
+      - backend
+      - frontend
+  
+  yawa-frontend:
+    depends_on:
+      - yawa-backend
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_API_BASE_URL=$CLIENT_API_BASE_URL
+    ports:
+      - $REACT_LOCAL_PORT:$REACT_DOCKER_PORT
+    networks:
+      - frontend
+
+volumes: 
+  db:
+
+networks:
+  backend:
+  frontend:
