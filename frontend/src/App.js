@@ -1,5 +1,4 @@
 import "./App.css";
-import data from "./data.json";
 import React, { useEffect, useRef, useState } from "react";
 import ImageWithSpinner from "./ImageWithSpinner";
 import ImageViewer from "./ImageViewer";
