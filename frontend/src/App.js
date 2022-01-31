@@ -3,6 +3,7 @@ import data from "./data.json";
 import React, { useEffect, useRef, useState } from "react";
 import ImageWithSpinner from "./ImageWithSpinner";
 import ImageViewer from "./ImageViewer";
+import StatusBar from "./StatusBar";
 import { fetchItems, updateItems } from "./api";
 import { isEqual } from "lodash";
 
@@ -25,6 +26,7 @@ function App() {
     const currentGalleryItems = Array.from(galleryItemsRef.current);
     if (!isEqual(lastSavedItems, currentGalleryItems)) {
       console.log("Update required!");
+      setLoading(true);
       const itemsToBeUpdated = currentGalleryItems.map((item) => {
         return {
           id: item.id,
@@ -37,9 +39,17 @@ function App() {
             "lastSavedItems",
             JSON.stringify(currentGalleryItems)
           );
+          setLastSavedTime(
+            new Date().toLocaleString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+            })
+          );
         } else {
           console.error("Something went wrong while updating");
         }
+        setLoading(false);
       });
     }
   };
@@ -57,6 +67,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <StatusBar lastSavedTime={lastSavedTime} isLoading={loading} />
         <div className="gallery">
           {galleryItems.map(({ title, position, type }, index) => {
             return (
