@@ -14,7 +14,7 @@ function App() {
   galleryItemsRef.current = galleryItems;
 
   const getImgUrl = (title) =>
-    `https://fakeimg.pl/250x250/ff0000,128/333333,255/?text=${title}&font=lobster`;
+    `https://fakeimg.pl/250x250/282c34/eae0d0/?retina=1&text=${title}`;
 
   const openImage = (title, type) => {
     updateActiveImg(getImgUrl(title));
@@ -40,6 +40,8 @@ function App() {
           position: item.position,
         };
       });
+      // console.log('Current gallery state: ', JSON.stringify(currentGalleryItems, 2, 1));
+      // console.log('Last saved items: ', JSON.stringify(lastSavedItems, 2, 1));
       updateItems(itemsToBeUpdated).then((res) => {
         if (res) {
           localStorage.setItem(
