@@ -1,7 +1,7 @@
 const superagent = require("superagent");
 let apiURL = "http://localhost:8000";
 
-const fetchItems = async () => {
+export const fetchItems = async () => {
   try {
     const res = await superagent.get(`${apiURL}`);
     return res.body;
@@ -11,7 +11,7 @@ const fetchItems = async () => {
   }
 };
 
-const updateItems = async (updatedItems) => {
+export const updateItems = async (updatedItems) => {
     try {
         const res = await superagent.post(`${apiURL}`).send(updatedItems);
         console.log(res);
@@ -21,5 +21,3 @@ const updateItems = async (updatedItems) => {
         return err;
     }
 }
-
-module.exports = { fetchItems, updateItems };
