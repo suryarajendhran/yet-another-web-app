@@ -14,7 +14,6 @@ function Card({
     `https://fakeimg.pl/250x250/282c34/eae0d0/?retina=1&text=${title}`;
   return (
     <div
-      key={id}
       style={{ order: position }}
       className="card"
       draggable="true"

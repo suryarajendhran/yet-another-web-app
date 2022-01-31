@@ -80,6 +80,7 @@ function App() {
           {galleryItems.map(({ title, position, id, type }, index) => {
             return (
               <Card
+                key={id}
                 title={title}
                 type={type}
                 position={position}
