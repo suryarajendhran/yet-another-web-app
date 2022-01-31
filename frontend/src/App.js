@@ -1,6 +1,5 @@
 import "./App.css";
 import React, { useEffect, useRef, useState } from "react";
-import ImageWithSpinner from "./ImageWithSpinner";
 import ImageViewer from "./ImageViewer";
 import StatusBar from "./StatusBar";
 import { fetchItems, updateItems } from "./api";
