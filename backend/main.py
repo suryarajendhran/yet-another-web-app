@@ -10,7 +10,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 config = Config('.env')
-DATABASE_URL = config('DATABASE_URL')
+DATABASE_URL = config('DATABASE_URL', default='')
 if 'PG_PORT_5432_TCP_ADDR' in environ.keys():
     DATABASE_URL = f'postgresql://postgres:{environ["PG_ENV_POSTGRES_PASSWORD"]}@{environ["PG_PORT_5432_TCP_ADDR"]}'
     print(f'DATABASE URL UPDATED FROM LINKING TO: {DATABASE_URL}')

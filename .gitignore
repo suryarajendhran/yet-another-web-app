@@ -2,3 +2,4 @@ backend/.env
 backend/server.py
 *.db
 .DS_Store
+.env
