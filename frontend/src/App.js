@@ -5,6 +5,7 @@ import ImageViewer from "./ImageViewer";
 import StatusBar from "./StatusBar";
 import { fetchItems, updateItems } from "./api";
 import { isEqual } from "lodash";
+import Card from "./Card";
 
 function App() {
   const [galleryItems, setGalleryItems] = useState([]);
@@ -18,6 +19,14 @@ function App() {
 
   const openImage = (title, type) => {
     updateActiveImg(getImgUrl(title));
+  };
+
+  const switchPositions = (index1, position1, index2, position2) => {
+    const gallery = Array.from(galleryItems);
+    gallery[index1].position = position2;
+    gallery[index2].position = position1;
+
+    setGalleryItems(gallery);
   };
 
   const saveData = () => {
@@ -68,52 +77,17 @@ function App() {
       <header className="App-header">
         <StatusBar lastSavedTime={lastSavedTime} isLoading={loading} />
         <div className="gallery">
-          {galleryItems.map(({ title, position, type }, index) => {
+          {galleryItems.map(({ title, position, id, type }, index) => {
             return (
-              <div
-                key={title}
-                style={{ order: position }}
-                className="card"
-                draggable="true"
-                onClick={() => {
-                  openImage(title, type);
-                }}
-                onDragStart={(event) => {
-                  event.target.style.opacity = 0.4;
-
-                  event.dataTransfer.effectAllowed = "move";
-                  event.dataTransfer.setData(
-                    "text/plain",
-                    JSON.stringify({ title, type, position, index })
-                  );
-                }}
-                onDragEnd={(event) => {
-                  event.target.style.opacity = 1;
-                }}
-                onDragOver={(event) => {
-                  if (event.preventDefault) {
-                    event.preventDefault();
-                  }
-                  return false;
-                }}
-                onDrop={(event) => {
-                  event.stopPropagation();
-
-                  const drop = JSON.parse(
-                    event.dataTransfer.getData("text/plain")
-                  );
-                  const gallery = Array.from(galleryItems);
-                  gallery[index].position = drop.position;
-                  gallery[drop.index].position = position;
-
-                  setGalleryItems(gallery);
-                  console.log(`${drop.title} dropped on ${title}`);
-                }}
-              >
-                <div className="card-overlay"></div>
-                <span>{title}</span>
-                <ImageWithSpinner imgUrl={getImgUrl(title)} />
-              </div>
+              <Card
+                title={title}
+                type={type}
+                position={position}
+                id={id}
+                index={index}
+                openImage={openImage}
+                switchPositions={switchPositions}
+              />
             );
           })}
         </div>
