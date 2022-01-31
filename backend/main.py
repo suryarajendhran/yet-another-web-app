@@ -6,6 +6,8 @@ from asyncpg.exceptions import DuplicateTableError
 from starlette.config import Config
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 config = Config('.env')
 DATABASE_URL = config('DATABASE_URL')
@@ -73,7 +75,11 @@ async def update_items(request):
     # return await fetch_items(request=request)
 
 
+middleware = [
+    Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=["*"])
+]
+
 app = Starlette(debug=True, routes=[
     Route('/', fetch_items, methods=["GET"]),
     Route('/', update_items, methods=["POST"]),
-], on_startup=[setup_app], on_shutdown=[teardown_app])
+], middleware=middleware, on_startup=[setup_app], on_shutdown=[teardown_app])
