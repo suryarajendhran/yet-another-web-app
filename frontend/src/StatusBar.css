@@ -1,0 +1,11 @@
+.status-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.loader {
+    font-size: 5px;
+    margin: 5px auto;
+}

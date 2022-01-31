@@ -3,6 +3,7 @@ import data from "./data.json";
 import React, { useState, useEffect, useRef } from "react";
 import ImageWithSpinner from "./ImageWithSpinner";
 import ImageViewer from "./ImageViewer";
+import StatusBar from "./StatusBar";
 import api, { updateItems } from "./api";
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
     if (updates.length > 0) {
       console.log("Updates detected: ", updates);
       try {
+        updateIsLoading(true);
         updateItems(updates).then((status) => {
           if (status) {
             const lastSavedTimeString = new Date().toLocaleString("en-US", {
@@ -53,12 +55,15 @@ function App() {
               minute: "numeric",
               hour12: true,
             });
-            updateLastSavedTime(lastSavedTimeString);
             setLatestRemoteState(
               currentStateRef.current.map((item) => {
                 return { ...item };
               })
             );
+            setTimeout(() => {
+              updateLastSavedTime(lastSavedTimeString);
+              updateIsLoading(false);
+            }, 2500);
           }
         });
       } catch (err) {
@@ -70,8 +75,8 @@ function App() {
   useEffect(() => {
     updateIsLoading(true);
     api.fetchItems().then((items) => {
-      updateGalleryItems(items.map(item => ({...item})));
-      setLatestRemoteState(items.map(item => ({...item})));
+      updateGalleryItems(items.map((item) => ({ ...item })));
+      setLatestRemoteState(items.map((item) => ({ ...item })));
       updateIsLoading(false);
       setInterval(saveData, 5000);
     });
@@ -84,8 +89,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {lastSavedTime ? <div>Last saved: {lastSavedTime}</div> : ""}
-        <div>{isLoading ? "Loading" : ""}</div>
+        <StatusBar lastSavedTime={lastSavedTime} isLoading={isLoading} />
         <div className="gallery">
           {sortArrayByProperty(galleryItems, "position").map(
             ({ title, position, type }, index) => {
