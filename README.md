@@ -76,14 +76,14 @@ Then there was the matter of connecting my trusty old PostgreSQL container to th
 1. Checkout the branch [part2-making-the-call-freeze](https://github.com/suryarajendhran/yet-another-web-app/tree/part2-making-the-call-freeze)
 
    ```git checkout part2-making-the-call-freeze```
-2. Switch to the frontend folder
+2. Switch to the backend folder
 
    ```cd backend```
 3. Install dependencies
 
    ```pipenv install```
 4. You can connect the app to a database by editing one of the .env templates (postgres, sqlite) and then renaming the file to .env. If you're lazy then sqlite is the way to go. If you skip this step, the app will complain about it.
-5. Serve the app locally
+5. Serve the api locally
 
    ```pipenv run uvicorn main:app```
 
@@ -93,3 +93,64 @@ Then there was the matter of connecting my trusty old PostgreSQL container to th
 | ----------- | ----------- | --------- | ------ |
 | / | GET | None | Array of all items |
 | / | POST | Array of items to be updated in the format {id: , position:} | Status code 200 if accepted, error if not |
+
+## Part 3
+
+In this part, the frontend is to be connected to the API to enable querying the items and conditional updates every 5 seconds. Simple enough. But holding the state reliably on the frontend and comparing it to the saved state was going to be a task. So I went with the approach that was closest fit with the frontend architecture. You can skip straight to the second approach if you want to see what I actually did rather than my process.
+
+### Approach 1: History
+
+This was the obvious approach. Hold the older/saved data into another state variable that we can check against and then save it the differences to the API. It was during this time, I learnt a bit more about React Hooks, for example, I learnt that the state variable is not accessible inside the method that was called during the save process. Then I had to do a bit of research and find out that I had to use useRefs here. They should add that in the React documentation. So I encountered two silly but time consuming bugs that I'd like to highlight:
+
+1. **Unintended updates to saved state:** What I observed here is that any change to the state variable holding the current state was reflected in the state variable holding the saved state. Obviously, I did the usual thing of using Array.from() and then array destructuring before I realised that it's a bit different for an array of objects. So sorted that out.
+2. **Array reordering:** My decision to base the rendering of the cards on the basis of an array and then updating position by reordering the array came to haunt me. But I was able to circumvent that by some defensive programming to ensure the array or the order is not corrupted
+
+I was able to get the application working just fine with the history approach and you can find it in the branch [history-approach](https://github.com/suryarajendhran/yet-another-web-app/tree/history-approach) to look at it. It's a bit messy.
+
+### Approach 2: Grid order approach
+
+Somehow this didn't strike me during the development of the drag and drop feature but I realised that I could easily position the items using the order property in CSS Grid. By mapping the order CSS property to the position property of each array item, I got the positioning perfect. Now updating the layout can be done by simply checking the position property.
+
+After messing around with state variables, I found it better to simply store the old info into LocalStorage and then compare with the current state. I know it be more performant if stored as a state variable but I preferred this approach for now as it would isolate the saved state. And calculating updates was a simple matter of comparing arrays.
+
+### Here's how you can view this version
+
+1. Checkout the branch [part3-tying-it-up-freeze](https://github.com/suryarajendhran/yet-another-web-app/tree/part3-tying-it-up-freeze)
+
+   ```git checkout part3-tying-it-up-freeze```
+2. Switch to the backend folder
+
+   ```cd backend```
+3. Install dependencies
+
+   ```pipenv install```
+4. You can connect the app to a database by editing one of the .env templates (postgres, sqlite) and then renaming the file to .env. If you're lazy then sqlite is the way to go. If you skip this step, the app will complain about it.
+5. Serve the api locally
+
+   ```pipenv run uvicorn main:app```
+6. Or you can build the docker image and run it from that but I'll explain more in the next part
+7. Open a new terminal and switch to the frontend folder
+
+   ```cd ../frontend```
+8. Install dependencies
+
+   ```npm i```
+9. Run the React app locally
+
+   ```npm start```
+
+## Part 4
+
+This is the deployment stage and I had to get familiar with docker-compose as I'd only worked with vanilla docker before but it turned out to be a handy tool. After a little bit of testing, I was able to get the services running fine. One thing to note is that the starlette APIs weren't serving the react app but an nginx container was. I chose to do this so that I could debug easier and to keep concerns separate.
+
+You don't need to checkout any branches to see the app at this stage, you can simply run it from the main branch. But before you do that, you just need to setup the .env file. You can go ahead and rename the .sample.env file at the root folder to have reasonable defaults:
+
+```mv .sample.env .env```
+
+Then you can use docker-compose to have the application served at [http://localhost:8888]
+
+```docker-compose up```
+
+### Known issues
+
+1. **Duplicate table creation/seeding:** The docker image that was recommended in the assignment spins up multiple processes and therefore caused all of the process to try to create and seed the table. While this didn't corrupt the database, it did throw an error on the server processes especially the first time the service was started. I could've sorted this by moving the table creation and seeding to a separate python file as a part of pre_startup script but I circumvented this by setting ```restart: unless-stopped```. This sorted the problem but better solution would be to make it part of the pre_startup script and avoid the error.
