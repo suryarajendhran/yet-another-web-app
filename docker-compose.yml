@@ -17,7 +17,7 @@ services:
     depends_on:
       - pg
     build: ./backend
-    # restart: unless-stopped
+    restart: unless-stopped
     env_file: .env
     ports:
       - $STARLETTE_LOCAL_PORT:$STARLETTE_DOCKER_PORT
